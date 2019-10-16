@@ -1,0 +1,87 @@
+
+'''
+Okay I'm gonna start with these 2:
+
+Acetyl Transferase - 3S6F - Coenzyme A (COA)
+des:
+78, 79, 80, 85, 86, 87, 88, 90,
+91, 114, 115, 118, 119, 121
+(n = 14)
+pack:
+4, 6, 26, 27, 28, 52, 60, 62, 63, 75, 77,
+81, 84, 89, 93, 94, 95, 109, 111, 112,
+116, 117, 122, 124, 126, ligand (n =
+26)
+
+Amino-transferase - 2XBN - 4'-deoxy-4'-aminopyridoxal-5'-phosphate (PMP)
+des:
+73, 133, 134, 135, 138, 159,
+161, 202, 231, 233, 234, 262,
+264, 265 (n = 14)
+pack:
+75, 136, 137, 139, 141, 142, 155, 158,
+162, 164, 200, 204, 205, 206, 236,
+260, 270, 273, 347, 349, 390, 392,
+ligand (n = 23)
+
+------------------------------------------------
+loading complex for 2xbn (3s6f already did it):
+downloaded sdf file for pmp from rcsb.org
+added hydrogens to pmp in avogadro
+cpu/rosetta/main/source/scripts/python/public/molfile_to_params.py -n pmp -p pmp —conformers-in-one-file pmp.sdf
+cleanATOM(2xbn.pdb)
+load clean ptn + lig.pdb in pymol and save complex
+sed -e "s/HETATM/ATOM  /g" 2xbn_complex_het.pdb > 2xbn_complex.pdb
+------------------------------------------------
+p = Pose()
+l = ['pmp.params']
+generate_nonstandard_residue_set(p,l)
+pose_from_file(p, '2xbn_complex.pdb')
+------------------------------------------------
+need resfile, des positions are ALLAA, pack positions are NATAA, others are NATRO, ex1 ex2,
+extra chi cutoff 0 , contrain relax to start coords, cst std dev 0.5
+
+ALLAA           # allow all amino acids
+EX 1 EX 2       # allow extra chi rotamers at chi-id 1 and 2 (note: multiple commands can be on the same line.)
+USE_INPUT_SC    # allow the use of the input side chain conformation   ( see below for more detailed description of commands)
+start
+<PDBNUM>[<ICODE>] <CHAIN>  <COMMANDS> 	#<PDBNUM>[<ICODE>] corresponds to columns 22-26
+40A Q ALLAA   # Residue 40, insertion code A, on chain Q, use any residue type
+
+so I need a script that can take input pdb + text file specifying certain res, output the desired resfile
+will make and call resfile.py
+------------------------------------------------
+
+rel = pyrosetta.rosetta.protocols.relax.FastRelax()
+tf = pyrosetta.rosetta.core.pack.task.TaskFactory()
+read = pyrosetta.rosetta.core.pack.task.operation.ReadResfile('2xbn.resfile')
+tf.push_back(read)
+rel.set_task_factory(tf)
+
+sf = get_fa_scorefxn()
+rel.set_scorefxn(sf)
+
+mm = MoveMap()
+mm.set_bb(True)
+mm.set_chi(True)
+rel.set_movemap(mm)
+
+rel.apply(p)
+
+#This works, and I'm curious to check if it is doing what I want, and to figure out
+#how to add the harmonic coordinate constraints, ex1, extra chi 0, but for now I am
+#gonna move on to trying with command line rosetta
+
+echi = pyrosetta.rosetta.core.pack.task.operation.ExtraChiCutoff(0.0)
+tf.push_back(echi)
+ex1 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex1(True)
+ex2 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex2(True) value=
+tf.push_back(ex1)
+tf.push_back(ex2)
+rel.constrain_relax_to_start_coords(constrain_relax_to_start_coords=True)
+coord_cst_stdev .5
+------------------------------------------------
+~/desktop/Rosetta/main/source/bin/score_jd2.macosclangrelease -in:file:s 2xbn_complex.pdb -ignore_unrecognized_res
+time ~/desktop/Rosetta/main/source/bin/relax.default.macosclangrelease -s 2xbn_complex.pdb -resfile 2xbn.resfile -extra_res_fa pmp.params -ex1 -ex2 -extrachi_cutoff 0 -nstruct 3 -in:file:fullatom -relax:fast -relax:respect_resfile -relax:constrain_relax_to_start_coords -relax:coord_cst_stdev .5
+
+'''
