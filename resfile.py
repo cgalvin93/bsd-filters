@@ -1,3 +1,5 @@
+#writes a resfile for an input pdb file, requires text file specifying which
+#residues to allow packing or design, fixes current sidechain of other residues
 #ipython resfile.py protein.pdb options.txt out.resfile
 #options file format is desiredcode,num1chain,num2chain,etc. with diff code on newline
 #ex.
@@ -25,8 +27,8 @@ for line in pdbfile.readlines():
 residues=[]
 for i,x in rawres:
 	if (i,x) not in residues:
-		residues.append((i,x))		
-		
+		residues.append((i,x))
+
 #parse options file to get lists of res w certain options
 allaa=[]
 nataa=[]
@@ -43,7 +45,7 @@ for line in options.readlines():
 			nataa.append(i)
 
 #write header
-ofile.write('USE_INPUT_SC') 
+ofile.write('USE_INPUT_SC')
 ofile.write('\nEX1 EX2')
 ofile.write('\nstart'+'\n')
 
@@ -58,9 +60,9 @@ for i,x in residues:
 		ofile.write(s+'\n')
 	else:
 		s = str(i) + ' ' + str(x) + ' NATRO'
-		ofile.write(s+'\n')	
+		ofile.write(s+'\n')
 
-ofile.close()	
+ofile.close()
 
 '''
 ALLAA           # allow all amino acids

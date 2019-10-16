@@ -75,7 +75,7 @@ rel.apply(p)
 echi = pyrosetta.rosetta.core.pack.task.operation.ExtraChiCutoff(0.0)
 tf.push_back(echi)
 ex1 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex1(True)
-ex2 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex2(True) value=
+ex2 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex2(True) 
 tf.push_back(ex1)
 tf.push_back(ex2)
 rel.constrain_relax_to_start_coords(constrain_relax_to_start_coords=True)

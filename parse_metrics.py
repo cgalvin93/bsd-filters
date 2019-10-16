@@ -30,7 +30,7 @@ for line in lines:
 #delta_unsatHbonds <= 1.0
 # packstat >= 0.60
 # dG_separated/dSASAx100 <= 0.0
-# dSASA_int > 300.0
+# dSASA_int >= 300.0
 # sc_value >= 0.7
 thresh_infile=open(sys.argv[2],'r')
 threshlines=[line.strip('\n') for line in thresh_infile.readlines()]
@@ -57,7 +57,6 @@ for condition in conditions:
 #identify the names of structures that satisfy all conditions,
 #which will have as many entries in the strc_sat_counter list
 #as there are conditions in the conditions list
-
 final_structures=[]
 for structure in set(strc_sat_counter):
     count=0
@@ -67,6 +66,7 @@ for structure in set(strc_sat_counter):
     if count==len(conditions):
         final_structures.append(structure)
 
+#write the names of the structures that satisfy all conditions to text file
 ofile=open(sys.argv[3],'w')
 ofile.write('CONDITIONS:\n')
 for condition in conditions:
