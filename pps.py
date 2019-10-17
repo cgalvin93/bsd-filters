@@ -1,45 +1,10 @@
-'''
-Natural sequences of these binding sites were obtained using the protein family
- alignment from Pfam and filtered to remove all redundant sequences.
+#time python pps.py native_align.fasta designs_align.fasta pps_scores.txt
 
+import sys
+import numpy as np
+import scipy
+from scipy import spatial
 
- Once the
-multiple alignment is de®ned, the pro®le is constructed by counting the numbers of each amino
-acid at each position along the multiple alignment.
-These counts are transformed into probabilities by
-normalizing the counts by the total number of
-amino acids and gaps observed at that position.
-These empirical probabilities re¯ect the likelihood
-of observing any amino acid k at position i. Since
-the counts are based on a ®nite set of sequences it
-can happen that not all 20 amino acids are
-observed at each position. Therefore, pseudo
-counts are introduced so that no amino acid has a
-zero probability to occur at position i. For more
-information on pro®le generating techniques, see
-Gribskov & Veretnik.26
-
-1. get the sequences
-2. function to turn sequences into probability distributions
-3. function to calculate js divergence for each position in 2 profiles
-pps = 1-js
-is it just for positions that are designable? or does it not matter since those
-only differences, so doing for whole thing captures anyway
-
-pseudo counts you can just add one to every event
-need to add to this code, change lists to counts and start at 1
-then string together into script that takes 2 alignment fastas and returns pps
-for each position
-then im gonna need a way to generate seq alignments from list of pdb files
-output by filter script. at that point i have
-everything but the actual strc and native sequences to run
-score->filter->subset_alignments->pps_subset/natural_binding_pos
-
-actual strc
-native sequences
-position of binding site residues in native alignment
-position of bionding site residues in designs alignment 
-'''
 #return a list of the unique sequences in a fasta file seq alignment
 def capture_seqs(file):
     indices=[]
@@ -59,11 +24,10 @@ def capture_seqs(file):
         strs.append(s)
     return list(set(strs))
 
-
 #return matrix of probability distribution for each amino acid at each position
+#uses pseudo counts to avoid any P=0
 #rows = amino acids
 #columns = frequencies at each position
-import numpy as np
 def p_dist(seqs):
     n_positions=len(seqs[0])
     n_seqs=len(seqs)
@@ -71,61 +35,61 @@ def p_dist(seqs):
     ala=[];asp=[];asn =[];arg =[];cys=[];phe =[];gly=[];glu =[];gln =[];his =[];
     ile =[];leu=[];lys =[];met =[];pro =[];ser =[];trp =[];tyr =[];thr=[];val=[]
     for i in range(0,n_positions):
-        nala=[];nasp=[];nasn =[];narg =[];ncys=[];nphe =[];ngly=[];nglu =[];ngln =[];nhis =[];
-        nile =[];nleu=[];nlys =[];nmet =[];npro =[];nser =[];ntrp =[];ntyr =[];nthr=[];nval=[];
-        ngap=[]
+        nala=1;nasp=1;nasn=1;narg=1;ncys=1;nphe=1;ngly=1;nglu=1;ngln=1;nhis=1;
+        nile=1;nleu=1;nlys=1;nmet=1;npro=1;nser=1;ntrp=1;ntyr=1;nthr=1;nval=1;
+        ngap=0
         for seq in seqs:
             aa=seq[i]
             if aa=='A':
-                nala.append(aa)
+                nala+=1
             elif aa=='C':
-                ncys.append(aa)
+                ncys+=1
             elif aa=='D':
-                nasp.append(aa)
+                nasp+=1
             elif aa=='E':
-                nglu.append(aa)
+                nglu+=1
             elif aa=='F':
-                nphe.append(aa)
+                nphe+=1
             elif aa=='G':
-                ngly.append(aa)
+                ngly+=1
             elif aa=='H':
-                nhis.append(aa)
+                nhis+=1
             elif aa=='I':
-                nile.append(aa)
+                nile+=1
             elif aa=='K':
-                nlys.append(aa)
+                nlys+=1
             elif aa=='L':
-                nleu.append(aa)
+                nleu+=1
             elif aa=='M':
-                nmet.append(aa)
+                nmet+=1
             elif aa=='N':
-                nasn.append(aa)
+                nasn+=1
             elif aa=='P':
-                npro.append(aa)
+                npro+=1
             elif aa=='Q':
-                ngln.append(aa)
+                ngln+=1
             elif aa=='R':
-                narg.append(aa)
+                narg+=1
             elif aa=='S':
-                nser.append(aa)
+                nser+=1
             elif aa=='T':
-                nthr.append(aa)
+                nthr+=1
             elif aa=='V':
-                nval.append(aa)
+                nval+=1
             elif aa=='W':
-                ntrp.append(aa)
+                ntrp+=1
             elif aa=='Y':
-                ntyr.append(aa)
+                ntyr+=1
             else:
-                ngap.append(aa)
-        ntot=float(n_seqs-len(ngap));fala=len(nala)/ntot
-        fasp=len(nasp)/ntot;fasn =len(nasn)/ntot;farg =len(narg)/ntot;
-        fcys=len(ncys)/ntot;fphe =len(nphe)/ntot;fgly=len(ngly)/ntot;
-        fglu =len(nglu)/ntot;fgln =len(ngln)/ntot;fhis =len(nhis)/ntot;
-        ffile =len(nile)/ntot;fleu=len(nleu)/ntot;flys =len(nlys)/ntot;
-        fmet =len(nmet)/ntot;fpro =len(npro)/ntot;fser =len(nser)/ntot;
-        ftrp =len(ntrp)/ntot;ftyr =len(ntyr)/ntot;fthr=len(nthr)/ntot;
-        fval=len(nval)/ntot
+                ngap+=1
+        ntot=float((n_seqs-ngap)+20);fala=nala/ntot
+        fasp=nasp/ntot;fasn=nasn/ntot;farg=narg/ntot;
+        fcys=ncys/ntot;fphe=nphe/ntot;fgly=ngly/ntot;
+        fglu =nglu/ntot;fgln=ngln/ntot;fhis=nhis/ntot;
+        ffile=nile/ntot;fleu=nleu/ntot;flys=nlys/ntot;
+        fmet=nmet/ntot;fpro=npro/ntot;fser=nser/ntot;
+        ftrp=ntrp/ntot;ftyr=ntyr/ntot;fthr=nthr/ntot;
+        fval=nval/ntot
         ala.append(fala);asp.append(fasp);asn.append(fasn);arg.append(farg);
         cys.append(fcys);phe.append(fphe);gly.append(fgly);glu.append(fglu);
         gln.append(fgln);his.append(fhis);ile.append(ffile);leu.append(fleu);
@@ -137,8 +101,6 @@ def p_dist(seqs):
     return a
 
 #calculate the pps score for each position in 2 distributions
-import scipy
-from scipy import spatial
 def calc_pps(p,q):
     n_pos = p.shape[1]
     pps_scores=[]
@@ -147,3 +109,15 @@ def calc_pps(p,q):
         pps=1-jsd
         pps_scores.append(pps)
     return pps_scores
+
+native_seqs = capture_seqs(sys.argv[1])
+mutant_seqs = capture_seqs(sys.argv[2])
+
+p_nat = p_dist(native_seqs)
+p_mut=p_dist(mutant_seqs)
+
+pps_scores=calc_pps(p_nat,p_mut)
+
+ofile=open(sys.argv[3],'w')
+ofile.write(str(pps_scores)+'\n')
+ofile.close()
