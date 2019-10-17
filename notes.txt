@@ -75,7 +75,7 @@ rel.apply(p)
 echi = pyrosetta.rosetta.core.pack.task.operation.ExtraChiCutoff(0.0)
 tf.push_back(echi)
 ex1 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex1(True)
-ex2 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex2(True) 
+ex2 = pyrosetta.rosetta.core.pack.task.operation.ExtraRotamersGeneric().ex2(True)
 tf.push_back(ex1)
 tf.push_back(ex2)
 rel.constrain_relax_to_start_coords(constrain_relax_to_start_coords=True)
@@ -83,5 +83,98 @@ coord_cst_stdev .5
 ------------------------------------------------
 ~/desktop/Rosetta/main/source/bin/score_jd2.macosclangrelease -in:file:s 2xbn_complex.pdb -ignore_unrecognized_res
 time ~/desktop/Rosetta/main/source/bin/relax.default.macosclangrelease -s 2xbn_complex.pdb -resfile 2xbn.resfile -extra_res_fa pmp.params -ex1 -ex2 -extrachi_cutoff 0 -nstruct 3 -in:file:fullatom -relax:fast -relax:respect_resfile -relax:constrain_relax_to_start_coords -relax:coord_cst_stdev .5
+------------------------------------------------
+<ROSETTASCRIPTS> ~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangrelease -l pdblist.txt -extra_res_fa pmp.params -parser:protocol iam.xml -parser:view -out:file:score_only iam-score.sc
+    <SCOREFXNS>
+			<ScoreFunction name="sf" weights="ref2015">
+			</ScoreFunction>
+    </SCOREFXNS>
+    <RESIDUE_SELECTORS>
+    </RESIDUE_SELECTORS>
+    <TASKOPERATIONS>
+    </TASKOPERATIONS>
+    <FILTERS>
+    </FILTERS>
+    <MOVERS>
+			<InterfaceAnalyzerMover name="iam" scorefxn="sf" packstat="True" interface_sc="True" />
+    </MOVERS>
+    <PROTOCOLS>
+			<Add mover_name="iam"/>
+    </PROTOCOLS>
+    <OUTPUT />
+</ROSETTASCRIPTS>
+------------------------------------------------
+Natural sequences of these binding sites were obtained using the protein family
+ alignment from Pfam and filtered to remove all redundant sequences.
 
+
+ Once the
+multiple alignment is de®ned, the pro®le is constructed by counting the numbers of each amino
+acid at each position along the multiple alignment.
+These counts are transformed into probabilities by
+normalizing the counts by the total number of
+amino acids and gaps observed at that position.
+These empirical probabilities re¯ect the likelihood
+of observing any amino acid k at position i. Since
+the counts are based on a ®nite set of sequences it
+can happen that not all 20 amino acids are
+observed at each position. Therefore, pseudo
+counts are introduced so that no amino acid has a
+zero probability to occur at position i. For more
+information on pro®le generating techniques, see
+Gribskov & Veretnik.26
+
+1. get the sequences
+2. function to turn sequences into probability distributions
+3. function to calculate js divergence for each position in 2 profiles
+pps = 1-js
+is it just for positions that are designable? or does it not matter since those
+only differences, so doing for whole thing captures anyway
+
+pseudo counts you can just add one to every event
+need to add to this code, change lists to counts and start at 1
+then string together into script that takes 2 alignment fastas and returns pps
+for each position
+then im gonna need a way to generate seq alignments from list of pdb files
+output by filter script. at that point i have
+everything but the actual strc and native sequences to run
+score->filter->subset_alignments->pps_subset/natural_binding_pos
+
+actual strc
+native sequences
+position of binding site residues in native alignment
+position of bionding site residues in designs alignment
 '''
+'''
+------------------------------------------------
+
+import Bio as bio
+from Bio.Align.Applications import MafftCommandline
+>>> from Bio.Align.Applications import MafftCommandline
+>>> mafft_exe = "/opt/local/mafft"
+>>> in_file = "../Doc/examples/opuntia.fasta"
+>>> mafft_cline = MafftCommandline(mafft_exe, input=in_file)
+>>> print(mafft_cline)
+/opt/local/mafft ../Doc/examples/opuntia.fasta
+
+If the mafft binary is on the path (typically the case on a Unix style operating system) then you don't need to supply the executable location:
+
+>>> from Bio.Align.Applications import MafftCommandline
+>>> in_file = "../Doc/examples/opuntia.fasta"
+>>> mafft_cline = MafftCommandline(input=in_file)
+>>> print(mafft_cline)
+mafft ../Doc/examples/opuntia.fasta
+
+You would typically run the command line with mafft_cline() or via the Python subprocess module, as described in the Biopython tutorial.
+
+Note that MAFFT will write the alignment to stdout, which you may want to save to a file and then parse, e.g.:
+
+stdout, stderr = mafft_cline()
+with open("aligned.fasta", "w") as handle:
+    handle.write(stdout)
+from Bio import AlignIO
+align = AlignIO.read("aligned.fasta", "fasta")
+
+from Bio import SeqIO as seqio
+for record in seqio.parse('2xbn_complex.pdb','pdb-atom'):
+  s=record.seq

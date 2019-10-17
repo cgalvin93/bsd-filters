@@ -14,7 +14,6 @@ del lines[0]
 
 #parse the score file to create a list where each element is (structure name,property name, property value)
 #for all structures and properties in the score file
-
 strc_names=[]
 datas=[]
 for line in lines:
