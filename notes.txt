@@ -32,7 +32,20 @@ cpu/rosetta/main/source/scripts/python/public/molfile_to_params.py -n pmp -p pmp
 cleanATOM(2xbn.pdb)
 load clean ptn + lig.pdb in pymol and save complex
 sed -e "s/HETATM/ATOM  /g" 2xbn_complex_het.pdb > 2xbn_complex.pdb
-------------------------------------------------
+
+
+1. ligand mdl file
+2. add hydrogens in avogadro
+3. mdl to params script
+cpu/rosetta/main/source/scripts/python/public/molfile_to_params.py -n coa -p coa coa.sdf
+4. clean ptn pdb and remove ligand
+5. load clean ptn, ligand pdb into pymol, export complex pdb (orientation and coords should automatically be right)
+6. clean complex pdb:
+all atom lines, no hetatm (sed -e "s/HETATM/ATOM__/g" 3s6f_complex.pdb > cleancomplex.pdb
+ligand chain should be X
+ligand after protein chains
+7. load into pyrosetta
+
 p = Pose()
 l = ['pmp.params']
 generate_nonstandard_residue_set(p,l)
@@ -178,3 +191,11 @@ align = AlignIO.read("aligned.fasta", "fasta")
 from Bio import SeqIO as seqio
 for record in seqio.parse('2xbn_complex.pdb','pdb-atom'):
   s=record.seq
+-------------------------------------------------
+perhaps I can align every sequence from the family to des starting strc sequence,
+numbering of bs res in that strc will align with bs res in others hopefully?
+-------------------------------------------------
+COUPLED MOVES TRIAL with 2xbn
+
+
+~/desktop/Rosetta/main/source/bin/coupled_moves.default.macosclangrelease -s 2xbn_complex.pdb -mute protocols.backrub.BackrubMover -ex1 -ex2 -extrachi_cutoff 0 -nstruct 1 -ignore_unrecognized_res -score::weights ref2015 -extra_res_fa pmp.params -resfile 2xbn.resfile -coupled_moves::mc_kt 2.4 -coupled_moves::boltzmann_kt 2.4 -coupled_moves::ntrials 1000 -coupled_moves::initial_repack false -coupled_moves::ligand_mode true -coupled_moves::ligand_weight 2 -coupled_moves::fix_backbone false -coupled_moves::bias_sampling true -coupled_moves::bump_check true -coupled_moves::exclude_nonclashing_positions true -coupled_moves::backbone_mover kic -coupled_moves::kic_perturber walking -nstruct 1
