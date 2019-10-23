@@ -3,8 +3,15 @@
 #to calculate pps with
 
 #must put binding site res numbers here manually
+#pdb numbering
 #2xbn:
-binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233, 234, 262,264, 265]
+binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
+                  234, 262,264, 265]
+#terms in the score file that are more favorable when higher value must be
+#specified:
+higher_better=['packstat','dSASA_hphobic','dSASA_int','dSASA_polar',
+               'hbonds_int','nres_int']
+
 
 import sys
 import Bio
@@ -14,6 +21,8 @@ import sys
 import numpy as np
 import scipy
 from scipy import spatial
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 #store lines of scorefile
 scorefile=open(sys.argv[1],'r')
@@ -204,9 +213,8 @@ def capture_seqs(file):
         strs.append(s)
     return list(set(strs))
 
-native_seqs=capture_seqs(sys.argv[])
+native_seqs=capture_seqs(sys.argv[2])
 p_nat=p_dist(native_seqs)
-
 #calculate the pps score for each position in 2 distributions
 def calc_pps(p,q):
     n_pos = p.shape[1]
@@ -217,6 +225,8 @@ def calc_pps(p,q):
         pps_scores.append(pps)
     return pps_scores
 
+outfilename=sys.argv[3]
+pdf = PdfPages(outfilename)
 #for every term, create 5 conditions within low/high range
 #for each condition, iterate over datas and store strc that meet
 #for strc that meet, get their bs seq from names
@@ -224,22 +234,20 @@ def calc_pps(p,q):
 #plot the 5 pps distributions for the term, along w n strc, name, thresh vals
 for term, low, high in to_scan:
     vals = foursteps(low,high)
-    if term=='packstat': #gotta do terms that obs > thresh and obs < thresh sep
+    term_scores=[]
+    nstrcs=[]
+    if term in higher_better: #gotta do terms that obs > thresh and obs < thresh sep
         conditions=[]
         conditions.append((term,low)) #low for > gives all strc
         for i in vals:
             conditions.append((term,i))
         for condition in conditions:
             strc = return_filtered_strc(datas, condition, '>=')
+            nstrcs.append(str(len(strc)))
             seqs = return_bs_seq(strc)
             p_mut=p_dist(seqs)
             pps_scores=calc_pps(p_nat,p_mut)
-            print len(pps_scores)
-            print pps_scores
-    else:
-        pass
-
-#####
+            term_scores.append(pps_scores)
     else:
         conditions=[]
         for i in vals:
@@ -248,23 +256,27 @@ for term, low, high in to_scan:
         conditions.reverse()
         for condition in conditions:
             strc = return_filtered_strc(datas, condition, '<=')
+            nstrcs.append(str(len(strc)))
+            seqs = return_bs_seq(strc)
+            p_mut=p_dist(seqs)
+            pps_scores=calc_pps(p_nat,p_mut)
+            term_scores.append(pps_scores)
+    fig,ax=plt.subplots()
+    bp_dict = ax.boxplot(term_scores)
+    ax.set_title(term)
+    ax.set_ylabel('PPS')
+    xlocs=[x+1 for x in range(len(term_scores))]
+    xlabs=[str(b) for a,b in conditions]
+    plt.xticks(xlocs, xlabs)
+    for line in bp_dict['medians']:
+        x,y = line.get_xydata()[1]
+        plt.text(x,y, '%.3f' % y,verticalalignment='center')
+    for i, line in enumerate(bp_dict['boxes']):
+        x, y = line.get_xydata()[0]
+        plt.text(x,y, nstrcs[i],
+             horizontalalignment='center',
+             verticalalignment='top')
+    pdf.savefig()
+    plt.clf()
 
-
-#time python pps.py native_align.fasta designs_align.fasta pps_scores.txt
-
-
-
-
-
-
-native_seqs = capture_seqs(sys.argv[1])
-mutant_seqs = capture_seqs(sys.argv[2])
-
-p_nat = p_dist(native_seqs)
-p_mut=p_dist(mutant_seqs)
-
-pps_scores=calc_pps(p_nat,p_mut)
-
-ofile=open(sys.argv[3],'w')
-ofile.write(str(pps_scores)+'\n')
-ofile.close()
+pdf.close()
