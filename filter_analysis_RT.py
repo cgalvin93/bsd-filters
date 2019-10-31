@@ -1,15 +1,14 @@
-#python filter_analysis.py scorefile native_seqs outfile
+#python filter_analysis_RT.py scorefile native_seqs outfile
 #must be run in directory with design pdb files so it can get sequences
-#to calculate pps with
 
 #1. pdblist.py
 #2. feed list to scoring xml
 #3. feed scorefile here
 
-#time python ~/desktop/bsd_filters/filter_analysis.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 1f4p-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 1zk4-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt fd-1zk4-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 2xbn-iam-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt fd-2xbn-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis_RT.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis_RT.py 1f4p-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis_RT.py 1zk4-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt fd-1zk4-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis_RT.py 2xbn-iam-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt cm-2xbn-iam-RT.pdf
 
 
 
@@ -52,8 +51,7 @@ from Bio import SeqUtils
 from Bio.SeqUtils import IUPACData
 import sys
 import numpy as np
-import scipy
-from scipy import spatial
+
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -151,8 +149,7 @@ def return_bs_seq(pdbfiles):
     return seqs
 
 
-#return matrix of probability distribution for each amino acid at each position
-#uses pseudo counts to avoid any P=0
+#return matrix of frequencies for each amino acid at each position
 #rows = amino acids
 #columns = frequencies at each position
 def p_dist(seqs):
@@ -162,8 +159,8 @@ def p_dist(seqs):
     ala=[];asp=[];asn =[];arg =[];cys=[];phe =[];gly=[];glu =[];gln =[];his =[];
     ile =[];leu=[];lys =[];met =[];pro =[];ser =[];trp =[];tyr =[];thr=[];val=[]
     for i in range(0,n_positions):
-        nala=1;nasp=1;nasn=1;narg=1;ncys=1;nphe=1;ngly=1;nglu=1;ngln=1;nhis=1;
-        nile=1;nleu=1;nlys=1;nmet=1;npro=1;nser=1;ntrp=1;ntyr=1;nthr=1;nval=1;
+        nala=0;nasp=0;nasn=0;narg=0;ncys=0;nphe=0;ngly=0;nglu=0;ngln=0;nhis=0;
+        nile=0;nleu=0;nlys=0;nmet=0;npro=0;nser=0;ntrp=0;ntyr=0;nthr=0;nval=0;
         ngap=0
         for seq in seqs:
             aa=seq[i]
@@ -209,7 +206,7 @@ def p_dist(seqs):
                 ntyr+=1
             else:
                 ngap+=1
-        ntot=float((n_seqs-ngap)+20);fala=nala/ntot
+        ntot=float((n_seqs-ngap));fala=nala/ntot
         fasp=nasp/ntot;fasn=nasn/ntot;farg=narg/ntot;
         fcys=ncys/ntot;fphe=nphe/ntot;fgly=ngly/ntot;
         fglu =nglu/ntot;fgln=ngln/ntot;fhis=nhis/ntot;
@@ -250,15 +247,20 @@ def capture_seqs(file):
 native_seqs=capture_seqs(sys.argv[2])
 p_nat=p_dist(native_seqs)
 
-#calculate the pps score for each position in 2 distributions
-def calc_pps(p,q):
+#calculate the ranktop score for each position in 2 distributions
+def calc_ranktop(p_nat,q):
     n_pos = p.shape[1]
-    pps_scores=[]
+    rt_scores=[]
     for i in range(0,n_pos):
-        jsd = (scipy.spatial.distance.jensenshannon(p[:,i],q[:,i]))**2
-        pps=1-jsd
-        pps_scores.append(pps)
-    return pps_scores
+        top_aa_num = list(p_nat[:,i]).index(max(list(p_nat[:,i])))
+        prediction_ranked=list(q[:,0])
+        top_aa_pred_freq=prediction_ranked[top_aa_num]; prediction_ranked.sort()
+        if top_aa_pred_freq==0.0:
+            rank_in_pred_profile=20
+        else:
+            rank_in_pred_profile=prediction_ranked.index(top_aa_pred_freq)+1
+        rt_scores.append(rank_in_pred_profile)
+    return rt_scores
 
 #open the output pdf file to put all the graphs on
 outfilename=sys.argv[3]
@@ -284,8 +286,8 @@ for term, low, high in to_scan:
             nstrcs.append(str(len(strc)))
             seqs = return_bs_seq(strc)
             p_mut=p_dist(seqs)
-            pps_scores=calc_pps(p_nat,p_mut)
-            term_scores.append(pps_scores)
+            rt_scores=calc_ranktop(p_nat,p_mut)
+            term_scores.append(rt_scores)
     else:
         conditions=[]
         for i in vals:
@@ -297,12 +299,12 @@ for term, low, high in to_scan:
             nstrcs.append(str(len(strc)))
             seqs = return_bs_seq(strc)
             p_mut=p_dist(seqs)
-            pps_scores=calc_pps(p_nat,p_mut)
-            term_scores.append(pps_scores)
+            rt_scores=calc_ranktop(p_nat,p_mut)
+            term_scores.append(rt_scores)
     fig,ax=plt.subplots()       #plotting the five pps distributions
     bp_dict = ax.boxplot(term_scores)
     ax.set_title(term)
-    ax.set_ylabel('PPS')
+    ax.set_ylabel('Ranktop')
     xlocs=[x+1 for x in range(len(term_scores))]
     xlabs=[str(b)[0:7] for a,b in conditions]
     plt.xticks(xlocs, xlabs)

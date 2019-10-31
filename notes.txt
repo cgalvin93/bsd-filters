@@ -261,6 +261,7 @@ RANKTOP DEVELOPMENT
 
 residues at binding site positions ranked by frequency
 rank in predicted profile of top ranked residue from known profile
+if doesnt appear rank=20
 
 
 -------------------------------------------------
