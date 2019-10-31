@@ -199,3 +199,105 @@ COUPLED MOVES TRIAL with 2xbn
 
 
 ~/desktop/Rosetta/main/source/bin/coupled_moves.default.macosclangrelease -s 2xbn_complex.pdb -mute protocols.backrub.BackrubMover -ex1 -ex2 -extrachi_cutoff 0 -nstruct 1 -ignore_unrecognized_res -score::weights ref2015 -extra_res_fa pmp.params -resfile 2xbn.resfile -coupled_moves::mc_kt 2.4 -coupled_moves::boltzmann_kt 2.4 -coupled_moves::ntrials 1000 -coupled_moves::initial_repack false -coupled_moves::ligand_mode true -coupled_moves::ligand_weight 2 -coupled_moves::fix_backbone false -coupled_moves::bias_sampling true -coupled_moves::bump_check true -coupled_moves::exclude_nonclashing_positions true -coupled_moves::backbone_mover kic -coupled_moves::kic_perturber walking -nstruct 1
+-------------------------------------------------
+DR KORTEMME MEETING OCT 24
+
+rotation:
+  -correlation for score terms
+  -ranktop dist in addition to pps
+  -cody:pareto front:how to best filter ptns from multiple terms
+  -OG plan good:
+    -add more filters
+    -plots for FD, BR designs
+    -qualitatively id terms that appear to correlate with PPS consistently
+
+ancestral reconstruction
+fleishman algorithm for stability
+  -do the stable proteins from these have more charges even though its not
+  explicitly the goal?
+
+NEXT MEETING THURSDAY AFTER RETREAT 1:30
+
+-------------------------------------------------
+
+
+fig,ax=plt.subplots()
+bp_dict = ax.boxplot(pltdatas)
+ax.set_title('feat')
+ax.set_ylabel('PPS')
+xlocs=[x+1 for x in range(len(pltdatas))]
+xlabs=['1','1.4','1.5']
+plt.xticks(xlocs, xlabs)
+plt.text(0.2,0.1,'test text',transform=ax.transAxes)
+nstrcs=['100','200','50']
+ax.legend(nstrcs)
+bp_dict = ax.boxplot(pltdatas)
+for line in bp_dict['medians']:
+    x,y = line.get_xydata()[1]
+    plt.text(x,y, '%.3f' % y,verticalalignment='center')
+for i, line in enumerate(bp_dict['boxes']):
+    x, y = line.get_xydata()[0] # bottom of left line
+    plt.text(x,y, nstrcs[i],
+         horizontalalignment='center', # centered
+         verticalalignment='top')
+plt.show()
+plt.clf()
+
+-------------------------------------------------
+
+CORRELATION COEFFICIENTS OF SCORETERMS
+
+have pandas dataframe with columns as each score term, rows as each protein
+
+import pandas as pd
+df = pd.read_fwf('1f4p-iam-score.sc') #after deleting first line SEQUENCE
+df.corr() #row variable correlation with the column variable is the value of the cell
+corr_cos = df.corr()
+pd.DataFrame(corr_cos).to_csv("correlations.csv") #print to csv file
+
+-------------------------------------------------
+
+RANKTOP DEVELOPMENT
+
+residues at binding site positions ranked by frequency
+rank in predicted profile of top ranked residue from known profile
+
+
+-------------------------------------------------
+
+HAVING TROUBLE USING HOLES BECAUSE DALPHABALL EXE WONT COMPILE
+
+DAlpahBall [student] $ make
+gcc -c -O3 -I/usr/local/include DAlphaBall.c
+gcc -c -O3 -I/usr/local/include sos_minor_gmp.c
+gcc -c -O3 -I/usr/local/include alf_tools_gmp.c
+gcc -c -O3 -I/usr/local/include binding.c
+binding.c:349:2: warning: implicit declaration of function 'cavballs_' is
+      invalid in C99 [-Wimplicit-function-declaration]
+        cavballs_( x, y, z, r, &ncav );
+        ^
+1 warning generated.
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore adjust.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore alfcx.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore alfcx_tools.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore cavballs.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore delcx.f
+delcx.f:4288:72:
+
+ 4288 |   pause
+      |
+Warning: Deleted feature: PAUSE statement at (1)
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore truncate_real.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore measure_tools.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore surface_tools.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore surface_only.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore surface_deriv_coord.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore volume_tools.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore volume_only.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore volume_deriv_coord.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore vector.f
+gfortran -c -O3 -x f77-cpp-input -fsecond-underscore write_simplices.f
+gcc -o ./DAlphaBall.gcc -O3 DAlphaBall.o sos_minor_gmp.o alf_tools_gmp.o binding.o adjust.o alfcx.o alfcx_tools.o cavballs.o delcx.o truncate_real.o measure_tools.o surface_tools.o surface_only.o surface_deriv_coord.o volume_tools.o volume_only.o volume_deriv_coord.o vector.o write_simplices.o -L/usr/local/lib -lgmp  -lm -lgfortran
+ld: library not found for -lgfortran
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make: *** [DAlphaBall.gcc] Error 1

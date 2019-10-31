@@ -1,5 +1,5 @@
 #writes file names of all pdb files in working directory to a text file
-#ipython pdblist.py pdblist.txt *.pdb
+#python ~/desktop/bsd_filters/pdblist.py pdblist.txt *.pdb
 import sys
 
 ofilename=sys.argv[1]

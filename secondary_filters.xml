@@ -1,0 +1,41 @@
+<ROSETTASCRIPTS>
+    <SCOREFXNS>
+			<ScoreFunction name="sf" weights="ref2015">
+			</ScoreFunction>
+    </SCOREFXNS>
+    <RESIDUE_SELECTORS>
+      <Chain name="chA" chains="A"/>
+    </RESIDUE_SELECTORS>
+    <TASKOPERATIONS>
+    </TASKOPERATIONS>
+    <FILTERS>
+      <BindingStrain name="strain" confidence="0.0" />
+      <AtomicContactCount name="acc" confidence="0.0" partition="jump" normalize_by_sasa="1"/>
+      <PreProline name="prepro" use_statistical_potential="0" confidence="0.0" />
+      <Geometry name="geom" count_bad_residues="1" confidence="0.0" residue_selector="chA" />
+      <CavityVolume name="cav" confidence="0.0" />
+      <ExposedHydrophobics name="exphyd" confidence="0.0" />
+      <BuriedUnsatHbonds name="buns_bb_heavy" report_bb_heavy_atom_unsats="true" scorefxn="sf" cutoff="4" residue_surface_cutoff="20.0" ignore_surface_res="true" confidence="0.0"/>
+      <AlaScan name="ala" scorefxn="sf" confidence="0.0" />
+      <LigInterfaceEnergy name="ligE"  scorefxn="sf" confidence="0.0" />
+      <ShapeComplementarity name="sc" write_median_dist="1" confidence="0.0" />
+    </FILTERS>
+    <MOVERS>
+    </MOVERS>
+    <PROTOCOLS>
+			<Add filter_name="strain"/>
+      <Add filter_name="acc"/>
+      <Add filter_name="prepro"/>
+      <Add filter_name="geom"/>
+      <Add filter_name="cav"/>
+      <Add filter_name="exphyd"/>
+      <Add filter_name="buns_bb_heavy"/>
+      <Add filter_name="ala"/>
+      <Add filter_name="ligE"/>
+      <Add filter_name="sc"/>
+    </PROTOCOLS>
+    <OUTPUT />
+~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangrelease -l pdblist.txt -extra_res_fa sam.params -parser:protocol ~/desktop/bsd_filters/secondary_filters.xml -parser:view -out:file:score_only test-3dlc-f2-score.sc
+INTERESTED IN ADDING HOLES
+-holes:dalphaball Rosetta/main/source/external/DAlpahBall/DAlphaBall.macgcc
+</ROSETTASCRIPTS>

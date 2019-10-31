@@ -1,17 +1,49 @@
-#python scorefile native_seqs outfile
+#python filter_analysis.py scorefile native_seqs outfile
 #must be run in directory with design pdb files so it can get sequences
 #to calculate pps with
+
+#1. pdblist.py
+#2. feed list to scoring xml
+#3. feed scorefile here
+
+#time python ~/desktop/bsd_filters/filter_analysis.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis.py 1f4p-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis.py 1zk4-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt fd-1zk4-iam.pdf
+
+
 
 #must put binding site res numbers here manually
 #pdb numbering
 #2xbn:
-binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
-                  234, 262,264, 265]
-#terms in the score file that are more favorable when higher value must be
+# binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
+#                   234, 262,264, 265]
+#1f4p:
+# binding_site_res=[10, 11, 12, 13, 14, 15, 58, 59,
+#                   60, 61, 62, 68, 93, 94, 95, 98,
+#                   100, 101, 102]
+#1zk4:
+binding_site_res=[13, 14, 15, 16, 17, 18, 19, 36,
+                  37, 38, 62, 63, 89, 90, 91, 92,
+                  112, 140, 142, 155, 159]
+#3dk9:
+# binding_site_res=[26, 27, 28, 29, 30, 31, 49, 50,
+#                   51, 52, 56, 57, 62,
+#                   66, 129, 130, 155, 156, 157,
+#                   177, 181, 197, 198, 201, 202,
+#                   291, 294, 298, 330, 331]
+#3dlc:
+# binding_site_res=[48, 49, 50,
+#                   51, 52, 53, 55, 72, 73, 74, 77,
+#                   100, 101, 102, 117, 118, 119,
+#                   122, 123]
+#3r2q:
+# binding_site_res=[9, 10, 11, 33, 34, 48, 49, 50,
+#                   62, 63, 64]
+
+#terms in the score file that are more favorable when value higher must be
 #specified:
 higher_better=['packstat','dSASA_hphobic','dSASA_int','dSASA_polar',
                'hbonds_int','nres_int']
-
 
 import sys
 import Bio
@@ -97,7 +129,6 @@ def threeto1(s):
 
 
 #from a list of pdb files, return binding site sequences from those files
-#I THINK THIS IS WORKING BUT NEED TO CONVERT 3 LETTER TO 1 LETTER CODES
 def return_bs_seq(pdbfiles):
     seqs=[]
     for file in pdbfiles:
@@ -195,6 +226,7 @@ def p_dist(seqs):
     a[14]=pro;a[15]=ser;a[16]=trp;a[17]=tyr;a[18]=thr;a[19]=val
     return a
 
+#get all the sequences from a fasta file
 def capture_seqs(file):
     indices=[]
     f=open(file,'r')
@@ -213,8 +245,10 @@ def capture_seqs(file):
         strs.append(s)
     return list(set(strs))
 
+#get sequences and frequency matrix of native binding site sequences
 native_seqs=capture_seqs(sys.argv[2])
 p_nat=p_dist(native_seqs)
+
 #calculate the pps score for each position in 2 distributions
 def calc_pps(p,q):
     n_pos = p.shape[1]
@@ -225,8 +259,11 @@ def calc_pps(p,q):
         pps_scores.append(pps)
     return pps_scores
 
+#open the output pdf file to put all the graphs on
 outfilename=sys.argv[3]
 pdf = PdfPages(outfilename)
+
+
 #for every term, create 5 conditions within low/high range
 #for each condition, iterate over datas and store strc that meet
 #for strc that meet, get their bs seq from names
@@ -234,8 +271,8 @@ pdf = PdfPages(outfilename)
 #plot the 5 pps distributions for the term, along w n strc, name, thresh vals
 for term, low, high in to_scan:
     vals = foursteps(low,high)
-    term_scores=[]
-    nstrcs=[]
+    term_scores=[]  #will store pps scores for strc meeting 5 thresholds
+    nstrcs=[]   #number of structures meeting each threshold
     if term in higher_better: #gotta do terms that obs > thresh and obs < thresh sep
         conditions=[]
         conditions.append((term,low)) #low for > gives all strc
@@ -261,12 +298,12 @@ for term, low, high in to_scan:
             p_mut=p_dist(seqs)
             pps_scores=calc_pps(p_nat,p_mut)
             term_scores.append(pps_scores)
-    fig,ax=plt.subplots()
+    fig,ax=plt.subplots()       #plotting the five pps distributions
     bp_dict = ax.boxplot(term_scores)
     ax.set_title(term)
     ax.set_ylabel('PPS')
     xlocs=[x+1 for x in range(len(term_scores))]
-    xlabs=[str(b) for a,b in conditions]
+    xlabs=[str(b)[0:7] for a,b in conditions]
     plt.xticks(xlocs, xlabs)
     for line in bp_dict['medians']:
         x,y = line.get_xydata()[1]

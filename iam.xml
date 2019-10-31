@@ -1,0 +1,22 @@
+<ROSETTASCRIPTS>
+    <SCOREFXNS>
+			<ScoreFunction name="sf" weights="ref2015">
+			</ScoreFunction>
+    </SCOREFXNS>
+    <RESIDUE_SELECTORS>
+    </RESIDUE_SELECTORS>
+    <TASKOPERATIONS>
+    </TASKOPERATIONS>
+    <FILTERS>
+    </FILTERS>
+    <MOVERS>
+			<InterfaceAnalyzerMover name="iam" scorefxn="sf" packstat="True" pack_separated="True" />
+    </MOVERS>
+    <PROTOCOLS>
+			<Add mover_name="iam"/>
+    </PROTOCOLS>
+    <OUTPUT />
+~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangrelease -l pdblist.txt -extra_res_fa fmn.params -parser:protocol ~/desktop/bsd_filters/iam.xml -parser:view -out:file:score_only 1f4p-iam-score.sc
+~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangrelease -l pdblist.txt -extra_res_fa nap.params -parser:protocol ~/desktop/bsd_filters/iam.xml -parser:view -out:file:score_only 1zk4-iam-score.sc
+~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangrelease -l pdblist.txt -extra_res_fa pmp.params -parser:protocol ~/desktop/bsd_filters/iam.xml -parser:view -out:file:score_only 2xbn-iam-score.sc
+</ROSETTASCRIPTS>
