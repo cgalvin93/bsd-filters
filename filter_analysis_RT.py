@@ -5,18 +5,15 @@
 #2. feed list to scoring xml
 #3. feed scorefile here
 
-#time python ~/desktop/bsd_filters/filter_analysis_RT.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis_RT.py 1f4p-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis_RT.py 1zk4-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt fd-1zk4-iam.pdf
 #time python ~/desktop/bsd_filters/filter_analysis_RT.py 2xbn-iam-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt cm-2xbn-iam-RT.pdf
-
+#time python ~/desktop/bsd_filters/filter_analysis_RT.py 3dk9-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dk9_binding_site.txt test-cm-3dk9-iam-RT.pdf
 
 
 #must put binding site res numbers here manually
 #pdb numbering
 #2xbn:
-binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
-                  234, 262,264, 265]
+# binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
+#                   234, 262,264, 265]
 #1f4p:
 # binding_site_res=[10, 11, 12, 13, 14, 15, 58, 59,
 #                   60, 61, 62, 68, 93, 94, 95, 98,
@@ -26,11 +23,11 @@ binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
 #                   37, 38, 62, 63, 89, 90, 91, 92,
 #                   112, 140, 142, 155, 159]
 #3dk9:
-# binding_site_res=[26, 27, 28, 29, 30, 31, 49, 50,
-#                   51, 52, 56, 57, 62,
-#                   66, 129, 130, 155, 156, 157,
-#                   177, 181, 197, 198, 201, 202,
-#                   291, 294, 298, 330, 331]
+binding_site_res=[26, 27, 28, 29, 30, 31, 49, 50,
+                  51, 52, 56, 57, 62,
+                  66, 129, 130, 155, 156, 157,
+                  177, 181, 197, 198, 201, 202,
+                  291, 294, 298, 330, 331]
 #3dlc:
 # binding_site_res=[48, 49, 50,
 #                   51, 52, 53, 55, 72, 73, 74, 77,
@@ -51,7 +48,6 @@ from Bio import SeqUtils
 from Bio.SeqUtils import IUPACData
 import sys
 import numpy as np
-
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -240,21 +236,23 @@ def capture_seqs(file):
         s=''
         for line in lines[start+1:end]:
             s+=str(line.strip('\n'))
-        strs.append(s)
+        strs.append(s.upper())
     return list(set(strs))
 
 #get sequences and frequency matrix of native binding site sequences
 native_seqs=capture_seqs(sys.argv[2])
 p_nat=p_dist(native_seqs)
 
-#calculate the ranktop score for each position in 2 distributions
+
+#calculate the ranktop score for each position
 def calc_ranktop(p_nat,q):
-    n_pos = p.shape[1]
+    n_pos = p_nat.shape[1]
     rt_scores=[]
     for i in range(0,n_pos):
         top_aa_num = list(p_nat[:,i]).index(max(list(p_nat[:,i])))
-        prediction_ranked=list(q[:,0])
-        top_aa_pred_freq=prediction_ranked[top_aa_num]; prediction_ranked.sort()
+        prediction_ranked=list(q[:,i])
+        top_aa_pred_freq=prediction_ranked[top_aa_num];
+        prediction_ranked.sort(reverse=1)
         if top_aa_pred_freq==0.0:
             rank_in_pred_profile=20
         else:
@@ -270,11 +268,11 @@ pdf = PdfPages(outfilename)
 #for every term, create 5 conditions within low/high range
 #for each condition, iterate over datas and store strc that meet
 #for strc that meet, get their bs seq from names
-#for set of bs seq , eval pps and store
-#plot the 5 pps distributions for the term, along w n strc, name, thresh vals
+#for set of bs seq , eval rt and store
+#plot the 5 rt distributions for the term, along w n strc, name, thresh vals
 for term, low, high in to_scan:
     vals = foursteps(low,high)
-    term_scores=[]  #will store pps scores for strc meeting 5 thresholds
+    term_scores=[]  #will store rt scores for strc meeting 5 thresholds
     nstrcs=[]   #number of structures meeting each threshold
     if term in higher_better: #gotta do terms that obs > thresh and obs < thresh sep
         conditions=[]
@@ -301,7 +299,7 @@ for term, low, high in to_scan:
             p_mut=p_dist(seqs)
             rt_scores=calc_ranktop(p_nat,p_mut)
             term_scores.append(rt_scores)
-    fig,ax=plt.subplots()       #plotting the five pps distributions
+    fig,ax=plt.subplots()       #plotting the five rt distributions
     bp_dict = ax.boxplot(term_scores)
     ax.set_title(term)
     ax.set_ylabel('Ranktop')

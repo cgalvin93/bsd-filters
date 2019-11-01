@@ -302,3 +302,8 @@ gcc -o ./DAlphaBall.gcc -O3 DAlphaBall.o sos_minor_gmp.o alf_tools_gmp.o binding
 ld: library not found for -lgfortran
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 make: *** [DAlphaBall.gcc] Error 1
+
+-------------------------------------------------
+I CAN JUST MAKE MED PPS/RT ANOTHER COLUMN IN THE SCOREFILES AND GET ALL AGAINST
+ALL CORRELATION
+AND PLOT MED VALUES VS SCORE FOR EACH TERM 

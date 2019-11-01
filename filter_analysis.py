@@ -10,14 +10,17 @@
 #time python ~/desktop/bsd_filters/filter_analysis.py 1f4p-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-iam.pdf
 #time python ~/desktop/bsd_filters/filter_analysis.py 1zk4-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt fd-1zk4-iam.pdf
 #time python ~/desktop/bsd_filters/filter_analysis.py 2xbn-iam-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt fd-2xbn-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis.py 3dk9-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dk9_binding_site.txt fd-3dk9-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis.py 3dlc-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dlc_binding_site.txt fd-3dlc-iam.pdf
+#time python ~/desktop/bsd_filters/filter_analysis.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
 
 
 
 #must put binding site res numbers here manually
 #pdb numbering
 #2xbn:
-binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
-                  234, 262,264, 265]
+# binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
+#                   234, 262,264, 265]
 #1f4p:
 # binding_site_res=[10, 11, 12, 13, 14, 15, 58, 59,
 #                   60, 61, 62, 68, 93, 94, 95, 98,
@@ -38,8 +41,8 @@ binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
 #                   100, 101, 102, 117, 118, 119,
 #                   122, 123]
 #3r2q:
-# binding_site_res=[9, 10, 11, 33, 34, 48, 49, 50,
-#                   62, 63, 64]
+binding_site_res=[9, 10, 11, 33, 34, 48, 49, 50,
+                  62, 63, 64]
 
 #terms in the score file that are more favorable when value higher must be
 #specified:
@@ -243,7 +246,7 @@ def capture_seqs(file):
         s=''
         for line in lines[start+1:end]:
             s+=str(line.strip('\n'))
-        strs.append(s)
+        strs.append(s.upper())
     return list(set(strs))
 
 #get sequences and frequency matrix of native binding site sequences
