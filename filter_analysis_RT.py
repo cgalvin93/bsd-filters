@@ -6,7 +6,7 @@
 #3. feed scorefile here
 
 #time python ~/desktop/bsd_filters/filter_analysis_RT.py 2xbn-iam-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt cm-2xbn-iam-RT.pdf
-#time python ~/desktop/bsd_filters/filter_analysis_RT.py 3dk9-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dk9_binding_site.txt test-cm-3dk9-iam-RT.pdf
+#time python ~/desktop/bsd_filters/filter_analysis_RT.py 3dk9-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dk9_binding_site.txt test2-cm-3dk9-iam-RT-muvar.pdf
 
 
 #must put binding site res numbers here manually
@@ -299,6 +299,11 @@ for term, low, high in to_scan:
             p_mut=p_dist(seqs)
             rt_scores=calc_ranktop(p_nat,p_mut)
             term_scores.append(rt_scores)
+    means=[]
+    vars=[]
+    for i in term_scores:
+        means.append(str(np.mean(i))[0:5])
+        vars.append(str(np.var(i))[0:5])
     fig,ax=plt.subplots()       #plotting the five rt distributions
     bp_dict = ax.boxplot(term_scores)
     ax.set_title(term)
@@ -306,14 +311,15 @@ for term, low, high in to_scan:
     xlocs=[x+1 for x in range(len(term_scores))]
     xlabs=[str(b)[0:7] for a,b in conditions]
     plt.xticks(xlocs, xlabs)
-    for line in bp_dict['medians']:
-        x,y = line.get_xydata()[1]
-        plt.text(x,y, '%.3f' % y,verticalalignment='center')
     for i, line in enumerate(bp_dict['boxes']):
         x, y = line.get_xydata()[0]
         plt.text(x,y, nstrcs[i],
              horizontalalignment='center',
              verticalalignment='top')
+        x2,y2 = line.get_xydata()[2]
+        plt.text(x2,y2,u"\u03bc: " +means[i])
+        x3,y3=line.get_xydata()[1]
+        plt.text(x3,y3,vars[i])
     pdf.savefig()
     plt.clf()
 

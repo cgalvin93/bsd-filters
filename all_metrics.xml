@@ -37,5 +37,5 @@
       <Add filter_name="sc"/>
     </PROTOCOLS>
     <OUTPUT />
-~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangrelease -s 2XBN_0135_last.pdb -extra_res_fa pmp.params -parser:protocol ~/desktop/bsd_filters/all_metrics.xml -parser:view -out:file:score_only 2xbn-all-score.sc
-</ROSETTASCRIPTS>
+  ~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangrelease -l pdblist.txt -extra_res_fa pmp.params -parser:protocol ~/desktop/bsd_filters/all_metrics.xml -parser:view -out:file:score_only 2xbn-all-score.sc
+  </ROSETTASCRIPTS>
