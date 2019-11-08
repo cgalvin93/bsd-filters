@@ -250,7 +250,7 @@ CORRELATION COEFFICIENTS OF SCORETERMS
 have pandas dataframe with columns as each score term, rows as each protein
 
 import pandas as pd
-df = pd.read_fwf('1f4p-iam-score.sc') #after deleting first line SEQUENCE
+df = pd.read_fwf('all_scores.sc') #after deleting first line SEQUENCE
 df.corr() #row variable correlation with the column variable is the value of the cell
 corr_cos = df.corr()
 pd.DataFrame(corr_cos).to_csv("correlations.csv") #print to csv file
@@ -304,3 +304,9 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 make: *** [DAlphaBall.gcc] Error 1
 
 -------------------------------------------------
+NEED A SCRIPT TO TAKE ACT ON DIRECTORY OF SCOREFILES
+AND MERGE ALL INTO ONE GIANT SCOREFILE
+THAT I CAN THEN GET THE CORRELATION COEFFICIENTS
+IDEALLY THE STRUCTURE NAMES WOULD BE EDITED SO THAT THEY ARE DIFFERENT
+FOR THE DIFFERENT METHODS
+HOWEVER FOR THE PURPOSE OF GETTING THESE CORRELATIONS IT DOESNT MATTER

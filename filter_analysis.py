@@ -1,4 +1,4 @@
-#python filter_analysis.py scorefile native_seqs outfile
+#python filter_analysis.py scorefile native_seqs outfile pdbID
 #must be run in directory with design pdb files so it can get sequences
 #to calculate pps with
 
@@ -7,47 +7,14 @@
 #3. feed scorefile here
 
 #time python ~/desktop/bsd_filters/filter_analysis.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 1f4p-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-iam.pdf
+
+#time python ~/desktop/bsd_filters/filter_analysis.py bre-1f4p-all-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-all.pdf
+
 #time python ~/desktop/bsd_filters/filter_analysis.py 1zk4-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt fd-1zk4-iam.pdf
 #time python ~/desktop/bsd_filters/filter_analysis.py 2xbn-iam-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt fd-2xbn-iam.pdf
 #time python ~/desktop/bsd_filters/filter_analysis.py 3dk9-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dk9_binding_site.txt fd-3dk9-iam.pdf
 #time python ~/desktop/bsd_filters/filter_analysis.py 3dlc-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dlc_binding_site.txt fd-3dlc-iam.pdf
 #time python ~/desktop/bsd_filters/filter_analysis.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
-
-
-
-#must put binding site res numbers here manually
-#pdb numbering
-#2xbn:
-# binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
-#                   234, 262,264, 265]
-#1f4p:
-# binding_site_res=[10, 11, 12, 13, 14, 15, 58, 59,
-#                   60, 61, 62, 68, 93, 94, 95, 98,
-#                   100, 101, 102]
-#1zk4:
-# binding_site_res=[13, 14, 15, 16, 17, 18, 19, 36,
-#                   37, 38, 62, 63, 89, 90, 91, 92,
-#                   112, 140, 142, 155, 159]
-#3dk9:
-# binding_site_res=[26, 27, 28, 29, 30, 31, 49, 50,
-#                   51, 52, 56, 57, 62,
-#                   66, 129, 130, 155, 156, 157,
-#                   177, 181, 197, 198, 201, 202,
-#                   291, 294, 298, 330, 331]
-#3dlc:
-# binding_site_res=[48, 49, 50,
-#                   51, 52, 53, 55, 72, 73, 74, 77,
-#                   100, 101, 102, 117, 118, 119,
-#                   122, 123]
-#3r2q:
-binding_site_res=[9, 10, 11, 33, 34, 48, 49, 50,
-                  62, 63, 64]
-
-#terms in the score file that are more favorable when value higher must be
-#specified:
-higher_better=['packstat','dSASA_hphobic','dSASA_int','dSASA_polar',
-               'hbonds_int','nres_int']
 
 import sys
 import Bio
@@ -59,6 +26,42 @@ import scipy
 from scipy import spatial
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+
+#must put binding site res numbers here manually
+#store pdb numbering of binding site residues for query protein
+ptn_pdb_id=sys.argv[4]
+if ptn_pdb_id == '2xbn':
+    binding_site_res=[73, 133, 134, 135, 138, 159,161, 202, 231, 233,
+                      234, 262,264, 265]
+elif ptn_pdb_id == '1f4p':
+    binding_site_res=[10, 11, 12, 13, 14, 15, 58, 59,
+                      60, 61, 62, 68, 93, 94, 95, 98,
+                      100, 101, 102]
+elif ptn_pdb_id == '1zk4':
+    binding_site_res=[13, 14, 15, 16, 17, 18, 19, 36,
+                      37, 38, 62, 63, 89, 90, 91, 92,
+                      112, 140, 142, 155, 159]
+elif ptn_pdb_id == '3dk9':
+    binding_site_res=[26, 27, 28, 29, 30, 31, 49, 50,
+                      51, 52, 56, 57, 62,
+                      66, 129, 130, 155, 156, 157,
+                      177, 181, 197, 198, 201, 202,
+                      291, 294, 298, 330, 331]
+elif ptn_pdb_id == '3dlc':
+    binding_site_res=[48, 49, 50,
+                      51, 52, 53, 55, 72, 73, 74, 77,
+                      100, 101, 102, 117, 118, 119,
+                      122, 123]
+elif ptn_pdb_id == '3r2q':
+    binding_site_res=[9, 10, 11, 33, 34, 48, 49, 50,
+                      62, 63, 64]
+else:
+    print 'the binding site residues of the query protein cannot be identified'
+
+#terms in the score file that are more favorable when value higher must be
+#specified:
+higher_better=['packstat','dSASA_hphobic','dSASA_int','dSASA_polar',
+               'hbonds_int','nres_int','acc']
 
 #store lines of scorefile
 scorefile=open(sys.argv[1],'r')
