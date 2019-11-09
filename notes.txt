@@ -310,3 +310,32 @@ THAT I CAN THEN GET THE CORRELATION COEFFICIENTS
 IDEALLY THE STRUCTURE NAMES WOULD BE EDITED SO THAT THEY ARE DIFFERENT
 FOR THE DIFFERENT METHODS
 HOWEVER FOR THE PURPOSE OF GETTING THESE CORRELATIONS IT DOESNT MATTER
+--------------------------------------------------
+what is the combination of filter terms and weights that, when applied to
+a set of designed structures, produces a subset with maximized pps
+
+first is, what are the relevant filter terms to use?
+second is, how to combine them and select threshold values?
+
+I have identified some relevant filter terms, but I have not QUANTIFIED THEIR
+RELEVANCE
+A straightforward way to combine is to take the top quintile structures for
+every relevant term (if less than a certain number of strc, include more to
+meet the minimum) and look for the structures with the greatest number of
+occurrences amongst the whole set, ie those that are in the top quintile for
+the greatest number of terms. WHAT WOULD BE THE PPS OF THESE STRC, AND HOW
+WOULD IT COMPARE TO THE PPS OF THE TOP QUINTILE FOR INDIVIDUAL FILTERS, ALONE?
+
+alternatively, could i somehow ask what is the subset of structures with the
+highest pps value, and then look at their features?
+
+
+I THINK THE BEST NEXT STEP IS TO JUST COMPLETE THE IDENTIFICATION OF TERMS
+IN THE SAME QUALITATIVE WAY THAT IVE BEEN DOING, CHECK OUT THEIR CORRELATIONS
+WITH EACH OTHER, AND GET A FINAL LIST OF TERMS TO DO THE COMBINATION ANALYSIS
+WITH. IE, GET STRC IN TOP QUINTILE OF EACH AND DO SOME ANALYSIS OF RESULTING
+SETS. what is pps of strc in multiple top quintiles? are there a lot? which groups
+of terms tend to have strc in each?
+
+KEEP IN MIND THAT TERMS THAT ARE EFFECTIVE EVEN WHEN TOTAL SCORE IS NOT
+ARE PROBABLY MORE USEFUL

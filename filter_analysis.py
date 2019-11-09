@@ -6,15 +6,9 @@
 #2. feed list to scoring xml
 #3. feed scorefile here
 
-#time python ~/desktop/bsd_filters/filter_analysis.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
 
-#time python ~/desktop/bsd_filters/filter_analysis.py bre-1f4p-all-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-all.pdf
+#time python ~/desktop/bsd_filters/filter_analysis.py bre-1f4p-all-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt fd-1f4p-all.pdf 1f4p
 
-#time python ~/desktop/bsd_filters/filter_analysis.py 1zk4-iam-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt fd-1zk4-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 2xbn-iam-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt fd-2xbn-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 3dk9-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dk9_binding_site.txt fd-3dk9-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 3dlc-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3dlc_binding_site.txt fd-3dlc-iam.pdf
-#time python ~/desktop/bsd_filters/filter_analysis.py 3r2q-iam-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt fd-3r2q-iam.pdf
 
 import sys
 import Bio

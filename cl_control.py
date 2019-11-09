@@ -87,6 +87,7 @@ os.system('~/desktop/Rosetta/main/source/bin/rosetta_scripts.default.macosclangr
 #for generating pps plots for all metrics for the 5 working structures from
 #the bre and cm data sets
 #starting in strc dir
+'''
 os.chdir('bre')
 os.chdir('1zk4')
 os.system('ipython ~/desktop/bsd_filters/filter_analysis.py bre-1zk4-all-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt bre-1zk4-all.pdf 1zk4')
@@ -101,14 +102,16 @@ os.chdir('3r2q')
 os.system('ipython ~/desktop/bsd_filters/filter_analysis.py bre-3r2q-all-score.sc ~/desktop/prjk/analysis/native_seqs/3r2q_binding_site.txt bre-3r2q-all.pdf 3r2q')
 os.chdir('..')
 os.chdir('..')
-
+'''
 os.chdir('cm')
+'''
 os.chdir('1f4p')
 os.system('ipython ~/desktop/bsd_filters/filter_analysis.py cm-1f4p-all-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt cm-1f4p-all.pdf 1f4p')
 os.chdir('..')
 os.chdir('1zk4')
 os.system('ipython ~/desktop/bsd_filters/filter_analysis.py cm-1zk4-all-score.sc ~/desktop/prjk/analysis/native_seqs/1zk4_binding_site.txt cm-1zk4-all.pdf 1zk4')
 os.chdir('..')
+'''
 os.chdir('2xbn')
 os.system('ipython ~/desktop/bsd_filters/filter_analysis.py cm-2xbn-all-score.sc ~/desktop/prjk/analysis/native_seqs/2xbn_binding_site.txt cm-2xbn-all.pdf 2xbn')
 os.chdir('..')
