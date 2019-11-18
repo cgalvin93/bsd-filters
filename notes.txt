@@ -339,3 +339,13 @@ of terms tend to have strc in each?
 
 KEEP IN MIND THAT TERMS THAT ARE EFFECTIVE EVEN WHEN TOTAL SCORE IS NOT
 ARE PROBABLY MORE USEFUL
+
+-----------------------------------------------------
+okay, analyze all metric pps plots and id terms, look at all their correlations,
+get final set of terms to explore further with multi filter script
+
+better ways (ie any way) to actually quantify the power of the terms would be
+great 
+
+very interested in algorithm to find highest pps subset amongst structures
+in top quintile of at least one relevant metric

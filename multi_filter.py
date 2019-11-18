@@ -88,19 +88,21 @@ for line in lines:
 # acc
 # buns_bb_heavy
 # cav
-# dSASA_hphobic
+# dSASA_int
 # exphyd
+#dgsep/dsasa
 # fa_intra_sol_xover4
-# ligE
+# lk_ball_wtd
+#omega
 # p_aa_pp
 # packstat
 # rama_prepro
 # ref
-# strain
-#using 7 terms to start that are most relevant from my memory
+# fa_atr
+#using 14 terms
 to_scan=[]
 for term in terms:
-    if term == 'buns_bb_heavy' or term == 'dSASA_hphobic' or term=='fa_intra_sol_xover4' or term=='p_aa_pp' or term=='packstat' or term=='rama_prepro' or term=='ref':
+    if term == 'acc' or term == 'buns_bb_heavy' or term=='cav' or term == 'dG_separated/dSASAx100' or term == 'dSASA_int' or term == 'exphyd' or term=='fa_intra_sol_xover4' or term == 'lk_ball_wtd' or term == 'omega' or term=='p_aa_pp' or term=='packstat' or term=='rama_prepro' or term=='ref' or term=='fa_atr':
         vals=[]
         for entry in datas:
             if entry[1]==term:
@@ -305,7 +307,8 @@ def return_topq_strc(term,low,high):
                 strc.append(i)
     return strc
 
-#get a list of all unique strc in top quintiles
+#get a list of all unique strc in top quintiles and
+#pandas table with strc in topq of each term
 all_strc = []
 df = pd.DataFrame()
 for term,low,high in to_scan:
@@ -400,8 +403,6 @@ for line in bp_dict['medians']:
 pdf.savefig()
 plt.clf()
 
-#can i write an algorithm to find the 50 structures with the highest pps
-#out of the set of topq structures?
 
 #ofile.close()
 pdf.close()
