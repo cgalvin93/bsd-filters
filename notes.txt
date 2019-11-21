@@ -28,7 +28,7 @@ ligand (n = 23)
 loading complex for 2xbn (3s6f already did it):
 downloaded sdf file for pmp from rcsb.org
 added hydrogens to pmp in avogadro
-cpu/rosetta/main/source/scripts/python/public/molfile_to_params.py -n pmp -p pmp —conformers-in-one-file pmp.sdf
+rosetta/main/source/scripts/python/public/molfile_to_params.py -n hem -p hem —conformers-in-one-file hem.mol2
 cleanATOM(2xbn.pdb)
 load clean ptn + lig.pdb in pymol and save complex
 sed -e "s/HETATM/ATOM  /g" 2xbn_complex_het.pdb > 2xbn_complex.pdb
@@ -345,7 +345,65 @@ okay, analyze all metric pps plots and id terms, look at all their correlations,
 get final set of terms to explore further with multi filter script
 
 better ways (ie any way) to actually quantify the power of the terms would be
-great 
+great
 
 very interested in algorithm to find highest pps subset amongst structures
 in top quintile of at least one relevant metric
+
+-----------------------------------------------------
+I THINK 3DLC MIGHT NOT BE WORKING BECAUSE SAM LINES IN PDB ARE HET INSTEAD OF ATOM
+
+sed -e "s/HETATM/ATOM  /g" 3DLC_0001.pdb > cleanpdbs/3DLC_0001.pdb
+
+make a folder called cleanpdbs
+
+import os
+f = open('pdblist.txt','r')
+names=[line.strip('\n') for line in f.readlines()]
+for filename in names:
+  s='sed -e "s/HETATM/ATOM  /g" '+filename+' > '+'cleanpdbs/'+filename
+  os.system(s)
+
+OKAY NOW MAYBE 3S6F WASNT WORKING FOR THE SAME REASON, LETS TRY THE SAME THING
+
+ALRIGHT NOW FOR 2IJ2 I NEED TO GENERATE THE PARAMS FILE AND THEN CLEAN THE PDBS
+ugh i think its gonna be easier to do this on my other laptop cus i can use
+avogadro to add H and python 2 is default lol
+
+OKAY FOR ALL OF THESE NEW CLEANPDBS DIRECTORIES I NEED TO MAKE SURE PDBLIST, params,
+ARE THERE SO I CAN GENERATE SCOREFILES, THEN RUN PPS
+
+GOD DAMN, ITS STILL NOT WORKING, WILL NOW TRY TO DELETE ALL NON ATOM LINES
+
+FFS IM STILL GETTING ONE OF TWO ERRORS:
+EITHER IT DOESNT RECOGNIZE SECOND CHAIN SO IAM FAILS BUT OTHER works
+ERROR: InterfaceAnalyzerMover: pose has only one chain, aborting analysis
+
+OR IT SAYS IT CANT FIND LIGAND AND NOTHING WORKS
+File: src/core/io/pose_from_sfr/PoseFromSFRBuilder.cc:512
+[ ERROR ] UtilityExitException
+ERROR: No match found for unrecognized residue at position 220( PDB ID:    1 X )
+Looking for lower-terminal upper-terminal residue with 3-letter code: SAM
+This can be caused by wrong residue naming. E.g. a BMA (beta-mannose) is named MAN (alpha-mannose)
+
+-----------------------------------------------------
+
+MUTATION PROFILES
+take starting strc that designs were generated off
+for each position, look at all the mutations (ala to glu; ala to ile; etc.)
+generate matrix where y is all residues for native protein,
+x is all residue for design proteins
+entries are number of times a y->x mutation occurred (5 ala to glus? 10 ala to ile?)
+get a mutation profile for each structure, sum for all strc for each method
+compare with mutation profile of native -> all other natives
+1. mut profiles for each strc native->des
+2. ^ native->all natives
+3. sum each for all strc to give des profiles for each method to compare with nat
+(nat profile same for all methods for a given strc), summed profile only 1
+4. y all amino acids
+  x native, fd, cm, bre
+  values are number of mutations to that residue
+^^^^can do one of these for each structure, at the least, which should def be valid
+^^^^can maybe do another summed over all strc for each method, even though kinda sketch 
+
+-----------------------------------------------------
