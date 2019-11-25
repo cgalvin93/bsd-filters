@@ -404,6 +404,45 @@ compare with mutation profile of native -> all other natives
   x native, fd, cm, bre
   values are number of mutations to that residue
 ^^^^can do one of these for each structure, at the least, which should def be valid
-^^^^can maybe do another summed over all strc for each method, even though kinda sketch 
+^^^^can maybe do another summed over all strc, even though kinda sketch
 
 -----------------------------------------------------
+okay i already did the fucking script so
+
+1.run freq table on all strc
+master table for all as well
+
+2. top 50 analysis
+for each strc,
+all, 50, 25, top metric + its name
+does top50 outperform bulk? does it outperform best metric?
+
+5. 25 data points analysis to get pearson r between normalized score value and
+mean pps of subsets with better score than that value for 14 relevant terms,
+looking across all strc
+if its interesting do it for some other terms as well
+
+4. apply new fast design
+
+6. pareto frontier
+
+7. mutation profiles
+
+3. a very simple way to quantify usefulness of different terms might be the %difference
+between the max pps of subset for that term and max pps of total score subset
+i could get such a value for each structure
+then look at mean and variance amongst that set of values
+
+ranktop of term top pps vals!!!!! or just rank
+
+-----------------------------------------------------
+so for each term, i want a list of 3 lists (1 for each method), where each list
+is the %diff vals for the max pps subset of that term and the max for TS
+
+in addition, for each strc +method i want a list with all the terms ranked by
+descending max pps
+
+-----------------------------------------------------
+
+REPEAT TIOP50 ANALYSIS WITH THE TERMS THAT HAVE BEST PERCD OVER TOTAL SCORE
+(IE TOP TERMS FROM FA2 ANALYSIS)
