@@ -429,6 +429,27 @@ fd_percd_means.reverse() #reverse so highest means first
 
 fdmeandf=make_df(fd_percd_means)
 fdmeandf.to_csv('fdmeans.csv')
+
+#finally, to take the mean across all methods
+fd_df=pd.read_csv('fd_percd.csv') #..... for bre and cm also
+all_means=[]
+for i in range(0,fd_df.shape[0]): #n_rows
+    rowvals=[]; term=fd_df.iloc[i][1]
+    for x in fd_df.iloc[i][2:7]: #2:7 skips row nums, metric names
+        rowvals.append(x)
+    for x in bre_df.iloc[i][2:7]: #2:7 skips row nums, metric names
+        rowvals.append(x)
+    for x in cm_df.iloc[i][2:7]: #2:7 skips row nums, metric names
+        rowvals.append(x)
+    mean=np.mean(rowvals);std=np.std(rowvals)
+    all_means.append((term,mean,std))
+
+all_means.sort(key=lambda means : means[1])
+all_means.reverse()
+
+all_df=make_df(all_means)
+all_df.to_csv('allmeans.csv')
+
 '''
 
 #take product of mean and ratio mean/std ??? rank by that ??? (to balance both)

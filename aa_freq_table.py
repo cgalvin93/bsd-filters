@@ -251,3 +251,63 @@ df['bre']=pd.Series(bre_avg_freqs)
 df['fd']=pd.Series(fd_avg_freqs)
 df['cm']=pd.Series(cm_avg_freqs)
 df.to_csv('allstrc_aa_freqs.csv')
+
+
+'''
+fp=pd.read_csv()
+
+def ratios(df):
+    allnewrows=[]
+    for i in range(0,df.shape[0]):
+        rowvals=[x for x in df.iloc[i][1:]]
+        nat=rowvals[1];res=rowvals[0]
+        newrow=[];newrow.append(res);newrow.append(nat)
+        for k in rowvals[2:]:
+            ratio=k/nat
+            newrow.append(ratio)
+        allnewrows.append(newrow)
+    newdf=pd.DataFrame(allnewrows,columns=['res','nat','bre','cm','fd'])
+    return newdf
+
+rfp=ratios(fp)
+
+import matplotlib.pyplot as plt
+
+def lists(df):
+    labels=[]
+    nat=[]
+    bre=[]
+    cm=[]
+    fd=[]
+    for i in rfp['res']:
+        labels.append(i)
+    for i in rfp['nat']:
+        nat.append(i)
+    for i in rfp['bre']:
+        bre.append(i)
+    for i in rfp['cm']:
+        cm.append(i)
+    for i in rfp['fd']:
+        fd.append(i)
+    return labels, nat, bre, cm, fd
+
+a,b,c,d,e=lists(rfp)
+
+x=np.arange(len(a))
+width = 0.35
+fig, ax = plt.subplots()
+rects1 = ax.bar(x - width/4, b, width, label='nat')
+rects2 = ax.bar(x + width/4, c, width, label='bre')
+rects1 = ax.bar(x - width/4, d, width, label='cm')
+rects2 = ax.bar(x + width/4, e, width, label='fd')
+
+ax.set_ylabel('Relative Abundance')
+ax.set_title('test')
+ax.set_xticks(x)
+ax.set_xticklabels(a)
+ax.legend()
+
+
+
+
+'''
