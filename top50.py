@@ -8,7 +8,7 @@
 #must be run in directory with design pdb files so it can get sequences
 #to calculate pps with
 
-#time ipython ~/desktop/bsd_filters/multi_filter.py bre-1f4p-all-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt 1f4p_top_fifty.pdf 1f4p
+#time ipython ~/desktop/bsd_filters/top50.py bre-1f4p-all-score.sc ~/desktop/prjk/analysis/native_seqs/1f4p_binding_site.txt 1f4p_top_fifty2.pdf 1f4p
 
 
 import sys
@@ -54,10 +54,6 @@ elif ptn_pdb_id == '3r2q':
 else:
     print 'the binding site residues of the query protein cannot be identified'
 
-#terms in the score file that are more favorable when value higher must be
-#specified:
-higher_better=['packstat','dSASA_hphobic','dSASA_int','dSASA_polar',
-               'hbonds_int','nres_int','acc']
 
 #store lines of scorefile
 scorefile=open(sys.argv[1],'r')
@@ -81,28 +77,37 @@ for line in lines:
         val=properties[index]
         datas.append((name,term,val))
 
+#terms in the score file that are more favorable when value higher must be
+#specified:
+higher_better=['packstat','dSASA_hphobic','dSASA_int','dSASA_polar',
+               'hbonds_int','nres_int','acc']
 
 #find the lowest and highest values for relevant terms,
 #store in a list (term, low, high) that will be used for calculations
 #need to look at plots and edit this list
-# acc
-# buns_bb_heavy
-# cav
-# dSASA_int
+#if term == 'acc' or term == 'buns_bb_heavy' or term=='cav' or term == 'dG_separated/dSASAx100' or term == 'dSASA_int' or term == 'exphyd' or term=='fa_intra_sol_xover4' or term == 'lk_ball_wtd' or term == 'omega' or term=='p_aa_pp' or term=='packstat' or term=='rama_prepro' or term=='ref' or term=='fa_atr':
+# top 16 from all means percd:
+# hbond_sc
+# ref
 # exphyd
-#dgsep/dsasa
-# fa_intra_sol_xover4
+# fa_elec
+# hbonds_int
+# hbond_bb_sc
+# nres_int
+# hbond_lr_bb
+# fa_atr
 # lk_ball_wtd
-#omega
+# cav
+# buns_bb_heavy
+# hbond_sr_bb
+# acc
 # p_aa_pp
 # packstat
-# rama_prepro
-# ref
-# fa_atr
-#using 14 terms
+# dSASA_int
+#or term=='cav' or term=='buns_bb_heavy' or term=='hbond_sr_bb' or term=='acc' or term=='p_aa_pp' or term=='packstat' or term=='dSASA_int'
 to_scan=[]
 for term in terms:
-    if term == 'acc' or term == 'buns_bb_heavy' or term=='cav' or term == 'dG_separated/dSASAx100' or term == 'dSASA_int' or term == 'exphyd' or term=='fa_intra_sol_xover4' or term == 'lk_ball_wtd' or term == 'omega' or term=='p_aa_pp' or term=='packstat' or term=='rama_prepro' or term=='ref' or term=='fa_atr':
+    if term == 'hbond_sc' or term == 'ref' or term=='exphyd' or term == 'fa_elec' or term == 'hbonds_int' or term == 'hbond_bb_sc' or term=='fa_atr' or term == 'hbond_lr_bb' or term == 'lk_ball_wtd'or term=='cav' or term=='buns_bb_heavy' or term=='hbond_sr_bb' or term=='acc' or term=='p_aa_pp' or term=='packstat' or term=='dSASA_int':
         vals=[]
         for entry in datas:
             if entry[1]==term:
@@ -327,11 +332,12 @@ for structure in all_strc:
             count+=1
     n_sets_each_strc.append((structure,count))
 
+
 #sort the structures by number of sets theyre in and get the top 50
 n_sets_each_strc.sort(key=lambda entry:entry[1])
 n_sets_each_strc.reverse()
+print str(n_sets_each_strc[0:50])
 top_fifty=[i[0] for i in n_sets_each_strc[0:50]]
-
 #open the output pdf file to put the graphs on
 outfilename=sys.argv[3]
 pdf = PdfPages(outfilename)
@@ -341,7 +347,7 @@ native_seqs=capture_seqs(sys.argv[2])
 p_nat=p_dist(native_seqs)
 mut_seqs = return_bs_seq(top_fifty)
 p_mut=p_dist(mut_seqs)
-top_twofive_seqs=return_bs_seq(top_fifty[0:25])
+top_twofive_seqs=return_bs_seq(top_fifty[0:35])
 p_twofive=p_dist(top_twofive_seqs)
 pps_scores=calc_pps(p_nat,p_mut)
 twofive_pps=calc_pps(p_nat,p_twofive)
@@ -370,7 +376,7 @@ both_pps.append(twofive_pps)
 bp_dict = ax.boxplot(both_pps)
 ax.set_ylabel('PPS')
 xlocs=[x+1 for x in range(len(both_pps))]
-xlabs=['all','topq_strc','top 50','top 25']
+xlabs=['all','topq_strc','top 50','top 35']
 plt.xticks(xlocs, xlabs)
 for line in bp_dict['medians']:
     x,y = line.get_xydata()[1]

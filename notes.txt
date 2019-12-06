@@ -421,6 +421,7 @@ does top50 outperform bulk? does it outperform best metric?
 mean pps of subsets with better score than that value for 14 relevant terms,
 looking across all strc
 if its interesting do it for some other terms as well
+INSTEAD I DID PERCD AS A WAY TO TRY TO QUANTIFY
 
 4. apply new fast design
 
@@ -446,3 +447,61 @@ descending max pps
 
 REPEAT TIOP50 ANALYSIS WITH THE TERMS THAT HAVE BEST PERCD OVER TOTAL SCORE
 (IE TOP TERMS FROM FA2 ANALYSIS)
+
+MUTATION PROF
+
+NEW FAST DESIGN
+
+PARETO FRONT ANALYSIS
+
+TRY EVERYTHING ON OTHER STRC
+--------------------
+
+for every strc from every method, there is at least one filter that outperforms
+total score, that does exceptionally well. suggests there are better ways to filter
+than others, but i guess that is kind of obvious. the real question is, what are the
+best ways to filter for a given set of designs?
+
+'ideal' terms may correlate with more detailed properties of structures or
+ligands, is there some way to analyze this? ie what if a ligand is charged,
+what if it is relatively big, what kinds of chemistry does it do in the binding site?
+do these properties influence which terms end up being more effective at distinguishing
+high pps subsets of strc? i already know that it varies across methods, but does it
+vary in this way also?
+
+--------------------
+analyze pareto while run top50 round 2
+
+mutation profs
+
+new fast design
+
+other strc
+
+preepare presentation
+
+work on estat paper
+
+--------------------
+
+df2=df.drop(columns=['Unnamed: 7','Unnamed: 8','Unnamed: 9'])
+
+In [60]: tf=[i for i in df2['top50']]
+
+In [61]: par=[i for i in df2['pareto']]
+
+In [62]: np.mean(tf)
+Out[62]: 788.3333333333334
+
+In [63]: np.mean(par)
+Out[63]: 769.8666666666667
+
+In [64]: tm=[i for i in df2['top-metric_value']]
+
+In [65]: np.mean(tm)
+Out[65]: 819.9333333333333
+
+In [66]: ts=[i for i in df2['total-score']]
+
+In [67]: np.mean(ts)
+Out[67]: 758.0666666666667

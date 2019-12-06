@@ -292,22 +292,31 @@ def lists(df):
     return labels, nat, bre, cm, fd
 
 a,b,c,d,e=lists(rfp)
-
+yticks=range(16)
 x=np.arange(len(a))
-width = 0.35
+width = 0.3
 fig, ax = plt.subplots()
-rects1 = ax.bar(x - width/4, b, width, label='nat')
-rects2 = ax.bar(x + width/4, c, width, label='bre')
-rects1 = ax.bar(x - width/4, d, width, label='cm')
-rects2 = ax.bar(x + width/4, e, width, label='fd')
-
+#rects1 = ax.bar(x - width, b, width, label='nat')
+rects2 = ax.bar(x- width, c, width, label='bre',color='orchid')
+rects3 = ax.bar(x, d, width, label='cm',color='purple')
+rects4 = ax.bar(x + width, e, width, label='fd',color='darkred')
 ax.set_ylabel('Relative Abundance')
 ax.set_title('test')
 ax.set_xticks(x)
+ax.set_yticks(yticks)
 ax.set_xticklabels(a)
 ax.legend()
+plt.grid()
+plt.show()
 
-
+def threeto1(s):
+    olseq=''
+    for i in range(0,len(s),3):
+        res = s[i:i+3].upper()
+        threelc=res[0]+res[1:3].lower()
+        onelc = Bio.SeqUtils.IUPACData.protein_letters_3to1[threelc]
+        olseq+=onelc
+    return olseq
 
 
 '''
