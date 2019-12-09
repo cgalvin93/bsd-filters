@@ -455,7 +455,7 @@ NEW FAST DESIGN
 PARETO FRONT ANALYSIS
 
 TRY EVERYTHING ON OTHER STRC
---------------------
+-----------------------------------------------------
 
 for every strc from every method, there is at least one filter that outperforms
 total score, that does exceptionally well. suggests there are better ways to filter
@@ -469,20 +469,20 @@ do these properties influence which terms end up being more effective at disting
 high pps subsets of strc? i already know that it varies across methods, but does it
 vary in this way also?
 
---------------------
-analyze pareto while run top50 round 2
-
+-----------------------------------------------------
+analyze pareto while run top50 round 2--------------------
+freq bar graphs --------------------
+pareto graph? 
 mutation profs
+prepare presentation
 
 new fast design
 
 other strc
 
-preepare presentation
-
 work on estat paper
 
---------------------
+-----------------------------------------------------
 
 df2=df.drop(columns=['Unnamed: 7','Unnamed: 8','Unnamed: 9'])
 

@@ -254,24 +254,25 @@ df.to_csv('allstrc_aa_freqs.csv')
 
 
 '''
-fp=pd.read_csv()
+import Bio
+from Bio import SeqUtils
+from Bio.SeqUtils import IUPACData
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 
 def ratios(df):
     allnewrows=[]
     for i in range(0,df.shape[0]):
         rowvals=[x for x in df.iloc[i][1:]]
         nat=rowvals[1];res=rowvals[0]
-        newrow=[];newrow.append(res);newrow.append(nat)
-        for k in rowvals[2:]:
+        newrow=[];newrow.append(res)
+        for k in rowvals[1:]:
             ratio=k/nat
             newrow.append(ratio)
         allnewrows.append(newrow)
     newdf=pd.DataFrame(allnewrows,columns=['res','nat','bre','cm','fd'])
     return newdf
-
-rfp=ratios(fp)
-
-import matplotlib.pyplot as plt
 
 def lists(df):
     labels=[]
@@ -279,35 +280,17 @@ def lists(df):
     bre=[]
     cm=[]
     fd=[]
-    for i in rfp['res']:
+    for i in df['res']:
         labels.append(i)
-    for i in rfp['nat']:
+    for i in df['nat']:
         nat.append(i)
-    for i in rfp['bre']:
+    for i in df['bre']:
         bre.append(i)
-    for i in rfp['cm']:
+    for i in df['cm']:
         cm.append(i)
-    for i in rfp['fd']:
+    for i in df['fd']:
         fd.append(i)
     return labels, nat, bre, cm, fd
-
-a,b,c,d,e=lists(rfp)
-yticks=range(16)
-x=np.arange(len(a))
-width = 0.3
-fig, ax = plt.subplots()
-#rects1 = ax.bar(x - width, b, width, label='nat')
-rects2 = ax.bar(x- width, c, width, label='bre',color='orchid')
-rects3 = ax.bar(x, d, width, label='cm',color='purple')
-rects4 = ax.bar(x + width, e, width, label='fd',color='darkred')
-ax.set_ylabel('Relative Abundance')
-ax.set_title('test')
-ax.set_xticks(x)
-ax.set_yticks(yticks)
-ax.set_xticklabels(a)
-ax.legend()
-plt.grid()
-plt.show()
 
 def threeto1(s):
     olseq=''
@@ -317,6 +300,30 @@ def threeto1(s):
         onelc = Bio.SeqUtils.IUPACData.protein_letters_3to1[threelc]
         olseq+=onelc
     return olseq
+
+def plot(filename):
+    df=pd.read_csv(filename)
+    dfr=ratios(df)
+    a,b,c,d,e=lists(dfr)
+    a2=[]
+    for i in a:
+        a2.append(threeto1(i))
+    yticks=range(5)
+    x=np.arange(len(a2))
+    width = 0.3
+    fig, ax = plt.subplots()
+    rects2 = ax.bar(x- width, c, width, label='BRE',color='green')
+    rects3 = ax.bar(x, d, width, label='CM',color='red')
+    rects4 = ax.bar(x + width, e, width, label='FD',color='blue')
+    ax.set_ylabel('Relative Abundance')
+    ax.set_title('Amino Acid Frequencies Amongst Designs, Relative to Native Frequencies')
+    ax.set_xticks(x)
+    ax.set_yticks(yticks)
+    ax.set_xticklabels(a2)
+    ax.legend()
+    plt.grid()
+    plt.savefig(filename[:-3]+'pdf')
+
 
 
 '''

@@ -208,7 +208,7 @@ def return_pareto_pps(scores,names,meth,id):
     p_pareto=p_dist(pareto_seqs)
     pps_scores=calc_pps(p_nat,p_pareto)
     n_strc=len(pareto_opt)
-    return n_strc,pps_scores
+    return n_strc,pps_scores,pareto_indices
 
 bre_all=[]
 cm_all=[]
@@ -251,12 +251,16 @@ for ptn_pdb_id in  ptn_ids:
     bre_scores,bre_names=return_scores(bre_sc)
     cm_scores,cm_names=return_scores(cm_sc)
     fd_scores,fd_names=return_scores(fd_sc)
-    bre_nstrc,brepps = return_pareto_pps(bre_scores,bre_names,'bre',ptn_pdb_id)
-    cm_nstrc,cmpps = return_pareto_pps(cm_scores,cm_names,'cm',ptn_pdb_id)
-    fd_nstrc,fdpps = return_pareto_pps(fd_scores,fd_names,'fd',ptn_pdb_id)
-    bre_all.append((ptn_pdb_id,bre_nstrc,brepps))
-    cm_all.append((ptn_pdb_id,cm_nstrc,cmpps))
-    fd_all.append((ptn_pdb_id,fd_nstrc,fdpps))
+    bre_nstrc,brepps,breindices = return_pareto_pps(bre_scores,bre_names,'bre',ptn_pdb_id)
+    cm_nstrc,cmpps,cmindices = return_pareto_pps(cm_scores,cm_names,'cm',ptn_pdb_id)
+    fd_nstrc,fdpps,fdindices = return_pareto_pps(fd_scores,fd_names,'fd',ptn_pdb_id)
+    # bre_all.append((ptn_pdb_id,bre_nstrc,brepps))
+    # cm_all.append((ptn_pdb_id,cm_nstrc,cmpps))
+    # fd_all.append((ptn_pdb_id,fd_nstrc,fdpps))
+    bre_all.append((ptn_pdb_id,bre_nstrc,brepps,bre_scores,breindices))
+    cm_all.append((ptn_pdb_id,cm_nstrc,cmpps,cm_scores,cmindices))
+    fd_all.append((ptn_pdb_id,fd_nstrc,fdpps,fd_scores,fdindices))
+
 
 def plot(list,title):
     fig,ax=plt.subplots()
