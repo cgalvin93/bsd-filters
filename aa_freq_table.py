@@ -324,6 +324,21 @@ def plot(filename):
     plt.grid()
     plt.savefig(filename[:-3]+'pdf')
 
+a,b,c,d,e=
+labs,nat,bre,fd,cm
 
-
+x=np.arange(4)
+y=np.arange(4)
+dat=[]
+for i in range(len(a)):
+    dat.append((a[i],b[i],e[i]))
+fig,ax=plt.subplots()
+for elm in dat:
+    ax.scatter(elm[1],elm[2],marker=r"$ {} $".format(elm[0]), edgecolors='none')
+ax.set_ylabel('CM Designs')
+ax.set_xlabel('Native')
+ax.set_title('Amino Acid Frequencies')
+ax.plot(x,y)
+plt.savefig('CM.pdf')
+plt.close()
 '''
